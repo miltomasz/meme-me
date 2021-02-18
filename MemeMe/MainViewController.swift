@@ -42,7 +42,8 @@ class MainViewController: UIViewController, UINavigationControllerDelegate {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        setupInputFields()
+        setupInputTextField(topTextField, text: Configuration.defaultTopText)
+        setupInputTextField(bottomTextField, text: Configuration.defaultBottomText)
         setupNavigationBar()
         setupBottomToolbar()
     }
@@ -59,7 +60,7 @@ class MainViewController: UIViewController, UINavigationControllerDelegate {
     
     // MARK: Setup
     
-    private func setupInputFields() {
+    private func setupInputTextField(_ textField: UITextField, text: String) {
         let memeTextAttributes: [NSAttributedStringKey: Any] = [
             NSAttributedString.Key.strokeColor: UIColor.black,
             NSAttributedString.Key.foregroundColor: UIColor.white,
@@ -68,15 +69,10 @@ class MainViewController: UIViewController, UINavigationControllerDelegate {
             NSAttributedString.Key.paragraphStyle: paragraph
         ]
         
-        topTextField.text = "TOP"
-        topTextField.backgroundColor = .clear
-        topTextField.defaultTextAttributes = memeTextAttributes.toTypingAttributes()
-        topTextField.delegate = self
-        
-        bottomTextField.text = "BOTTOM"
-        bottomTextField.backgroundColor = .clear
-        bottomTextField.defaultTextAttributes = memeTextAttributes.toTypingAttributes()
-        bottomTextField.delegate = self
+        textField.text = text
+        textField.backgroundColor = .clear
+        textField.defaultTextAttributes = memeTextAttributes.toTypingAttributes()
+        textField.delegate = self
     }
     
     private func setupNavigationBar() {
@@ -89,17 +85,17 @@ class MainViewController: UIViewController, UINavigationControllerDelegate {
     // MARK: - Actions
 
     @IBAction func pickAnImage(_ sender: Any) {
-        let pickerController = UIImagePickerController()
-        pickerController.delegate = self
-        pickerController.sourceType = .photoLibrary
-        
-        present(pickerController, animated: true, completion: nil)
+        presentPickerViewController(sourceType: .photoLibrary)
     }
     
     @IBAction func takeAnImage(_ sender: Any) {
+        presentPickerViewController(sourceType: .camera)
+    }
+    
+    private func presentPickerViewController(sourceType: UIImagePickerController.SourceType) {
         let pickerController = UIImagePickerController()
         pickerController.delegate = self
-        pickerController.sourceType = .camera
+        pickerController.sourceType = sourceType
         
         present(pickerController, animated: true, completion: nil)
     }
