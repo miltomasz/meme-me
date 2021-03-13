@@ -36,6 +36,7 @@ class MainViewController: UIViewController, UINavigationControllerDelegate {
     }()
     
     var memedImage: UIImage?
+    var delegate: CreateMemeDelegate?
     
     // MARK: - Lifecycle
     
@@ -108,20 +109,32 @@ class MainViewController: UIViewController, UINavigationControllerDelegate {
         
         activityController.completionWithItemsHandler = {[weak self] (activityType: UIActivityType?, completed: Bool, returnedItems: [Any]?, error: Error?) in
             if completed {
-                self?.saveMeme()
+                self?.saveMeme(memedImage)
+                self?.dismiss(animated: true, completion: { [weak self] in
+                    self?.delegate?.refreshTable()
+                })
             }
         }
         
         present(activityController, animated: true)
     }
     
-    private func saveMeme() {
+    @IBAction func cancelMeme(_ sender: Any) {
+        dismiss(animated: true, completion: nil)
+    }
+    
+    private func saveMeme(_ memedImage: UIImage) {
         guard let topText = topTextField.text,
               let bottomText = bottomTextField.text,
-              let image = imagePickerView.image,
-              let memedImage = memedImage else { return }
+              let image = imagePickerView.image else { return }
         
         let meme = Meme(topText: topText, bottomText:bottomText, originalImage: image, memedImage: memedImage)
+        
+        // Add it to the memes array in the Application Delegate
+        let object = UIApplication.shared.delegate
+        guard let appDelegate = object as? AppDelegate else { return }
+        
+        appDelegate.memes.append(meme)
     }
     
     private func generateMemedImage() -> UIImage? {
