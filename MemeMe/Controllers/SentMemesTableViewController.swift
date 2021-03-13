@@ -8,12 +8,6 @@
 
 import UIKit
 
-protocol CreateMemeDelegate {
-    
-    func refreshTable()
-    
-}
-
 class SentMemesTableViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, CreateMemeDelegate {
     
     // MARK: - Variables
@@ -40,6 +34,11 @@ class SentMemesTableViewController: UIViewController, UITableViewDelegate, UITab
     private func setupTableView() {
         memeTableView.layoutMargins = UIEdgeInsets.zero
         memeTableView.separatorInset = UIEdgeInsets.zero
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        memeTableView?.reloadData()
     }
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
@@ -70,6 +69,12 @@ class SentMemesTableViewController: UIViewController, UITableViewDelegate, UITab
         return cell
     }
     
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        let indexPath = (indexPath as NSIndexPath)
+        let meme = memes[indexPath.row]
+        
+        MemeDetailsAction.go(with: self, meme: meme)
+    }
     // MARK: - CreateMemeDelegate
     
     func refreshTable() {

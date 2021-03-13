@@ -8,7 +8,7 @@
 
 import UIKit
 
-class SentMemesCollectionViewController: UICollectionViewController {
+class SentMemesCollectionViewController: UICollectionViewController, CreateMemeDelegate {
     
     // MARK: - IB
 
@@ -38,9 +38,16 @@ class SentMemesCollectionViewController: UICollectionViewController {
     }
     
     override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
         collectionView?.reloadData()
     }
-
+    
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        guard let mainViewController = segue.destination as? MainViewController else { return }
+        
+        mainViewController.delegate = self
+    }
+    
     // MARK: UICollectionViewDataSource
 
     override func numberOfSections(in collectionView: UICollectionView) -> Int {
@@ -64,12 +71,15 @@ class SentMemesCollectionViewController: UICollectionViewController {
     // MARK: UICollectionViewDelegate
     
     override func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath:IndexPath) {
-        guard let detailController = self.storyboard!.instantiateViewController(withIdentifier: "MemeDetailsViewController") as? MemeDetailsViewController else { return }
-
         let indexPath = (indexPath as NSIndexPath)
-        detailController.meme = memes[indexPath.row]
-        detailController.hidesBottomBarWhenPushed = true
-
-        navigationController?.pushViewController(detailController, animated: true)
+        let meme = memes[indexPath.row]
+        
+        MemeDetailsAction.go(with: self, meme: meme)
+    }
+    
+    // MARK: UICollectionViewDelegate
+    
+    func refreshTable() {
+        collectionView?.reloadData()
     }
 }
